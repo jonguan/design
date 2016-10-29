@@ -2,7 +2,9 @@ package gumball ;
 
 public class GumballMachine {
  
-	private static GumballMachine theMachine ;
+	private volatile static GumballMachine theMachine ;
+
+	public int quarters = 0;
 
 	State soldOutState;
 	State noQuarterState;
@@ -14,15 +16,15 @@ public class GumballMachine {
 
 	private GumballMachine() { }
  
-	public static GumballMachine getInstance() {
+	public static  GumballMachine getInstance() {
 		if (theMachine == null) {
-			theMachine = new GumballMachine() ;
-			theMachine.init( 100 ) ;
-			return theMachine ;
+			synchronized (GumballMachine.class){
+				theMachine = new GumballMachine() ;
+				theMachine.init( 100 ) ;
+			}
 		}
-		else {
-			return theMachine ;
-		}
+		return theMachine ;
+
 	}
  
 	private void init( int numberGumballs ) {
@@ -38,16 +40,21 @@ public class GumballMachine {
 	}
 
 	public void insertQuarter() {
-		state.insertQuarter();
+		this.quarters++;
 	}
  
 	public void ejectQuarter() {
 		state.ejectQuarter();
+		this.quarters--;
 	}
  
 	public void turnCrank() {
-		state.turnCrank();
-		state.dispense();
+		while(this.quarters > 0){
+			state.insertQuarter();
+			state.turnCrank();
+			state.dispense();
+			this.quarters--;
+		}
 	}
 
 	public int getCount() {

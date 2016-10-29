@@ -16,16 +16,11 @@ public class GumballResource extends ServerResource {
     @Get
     public Representation get_request() {
 
-        String banner = machine.toString() ;
-        int count = machine.getCount() ;
-        String state = machine.getStateString() ;
-
-
         GumballJackson gb = new GumballJackson();
-        gb.setBanner(banner);
-        gb.setCount(count);
-        gb.setState(state);
-        System.out.println("banner is "+ banner);
+        gb.setBanner(machine.toString());
+        gb.setCount(machine.getCount());
+        gb.setState(machine.getStateString());
+        System.out.println("banner is "+ machine.toString());
         return new JacksonRepresentation<GumballJackson>(gb) ;
     }
 
@@ -35,21 +30,30 @@ public class GumballResource extends ServerResource {
      * @param rep action:string,
      * @return
      */
-    @Put
-    public void put_request(Representation rep) throws IOException {
+    @Post
+    public void post_request(Representation rep) throws IOException {
 
-        JacksonRepresentation<GumballJackson> gumballRep = new JacksonRepresentation<GumballJackson> (rep, GumballJackson.class);
-    GumballJackson gb = gumballRep.getObject();
-        System.out.print( gb ) ;
+        JacksonRepresentation<GumballAction> gumballAction = new JacksonRepresentation<GumballAction> (rep, GumballAction.class);
+        GumballAction gb = gumballAction.getObject();
 
-//        String action = gb.getString("action") ;
-//        System.out.println( "action: " + action ) ;
-//
-//        if ( action.equals( "insert-quarter") )
-//            machine.insertQuarter() ;
-//        if ( action.equals( "turn-crank") )
-//            machine.turnCrank();
-//
+        String action = gb.getAction();
+        System.out.println( "action: " + action ) ;
+
+        if ( action.equals( "insert-quarter") ){
+            machine.insertQuarter() ;
+            System.out.println( "numQuarters: " + machine.quarters ) ;
+        }
+
+
+        if ( action.equals( "turn-crank") ){
+            machine.turnCrank();
+            System.out.println( "-numQuarters: " + machine.quarters ) ;
+
+        }
+
+
+
+        System.out.println("machine " + machine.toString());
 //        JSONObject response = new JSONObject() ;
 //        String state = machine.getStateString() ;
 //        response.put( "result", state ) ;

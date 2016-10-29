@@ -20,6 +20,8 @@ public class GumballJackson {
         return state;
     }
 
+
+
     public void setBanner(String content) {
         this.banner = content;
     }
@@ -31,5 +33,6 @@ public class GumballJackson {
     public void setState(String state) {
         this.state = state;
     }
+
 
 }
